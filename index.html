@@ -189,7 +189,7 @@ tfoot{background:#f0f5fc}
 <section id="tab-general" class="tab-panel active" role="tabpanel" aria-labelledby="tabButtonGeneral">
 <section class="cards"><article class="card"><div class="card-label">Jumlah pelajar aktif</div><div class="metric" id="totalStudents">—</div><div class="metric-sub">Berdasarkan sesi aktif</div></article><article class="card"><div class="card-label">Blok berpenghuni</div><div class="metric" id="blockCount">—</div><div class="metric-sub">Blok dengan rekod penghuni</div></article><article class="card"><div class="card-label">Negeri diwakili</div><div class="metric" id="stateCount">—</div><div class="metric-sub">Negeri asal dalam rekod</div></article><article class="card"><div class="card-label">Purata pelajar / blok</div><div class="metric" id="avgBlock">—</div><div class="metric-sub">Anggaran bagi blok berpenghuni</div></article></section>
 <section class="panels"><article class="panel"><h2>Taburan pelajar mengikut blok</h2><p>Bilangan pelajar aktif bagi setiap blok kediaman</p><div id="blockChart" class="chart"></div><div id="blockTable" class="table-wrap"></div></article><article class="panel"><h2>Taburan mengikut program</h2><p>Bilangan pelajar mengikut program</p><div id="programChart" class="chart"></div></article><article class="panel"><h2>Taburan mengikut jantina</h2><p>Ringkasan data demografi</p><div id="genderChart" class="chart"></div></article>
-<article class="panel map-panel"><h2>Taburan pelajar mengikut negeri</h2><p>Peta interaktif Malaysia pilih atau sentuh negeri untuk melihat statistik</p><div class="map-layout"><div><div id="stateMap" aria-label="Peta taburan pelajar mengikut negeri"><p style="padding:18px;color:#667085">Memuatkan peta negeri Malaysia…</p></div><div class="map-legend"><span>Rendah</span><div class="legend-scale"><span style="background:#dbeafe"></span><span style="background:#93c5fd"></span><span style="background:#3b82f6"></span><span style="background:#1e40af"></span></div><span>Tinggi</span></div><div class="map-note">Geometri peta dimuatkan daripada dataset GeoJSON terbuka DOSM Malaysia. Sambungan internet diperlukan.</div></div><div><div id="stateDetail" class="state-detail"><div class="state-name">Pilih negeri pada peta</div><div class="state-number">—</div><div class="state-share">Bilangan dan peratus akan dipaparkan di sini.</div></div><h3 style="font-size:14px;margin:0">Kedudukan negeri</h3><div id="stateTable" class="table-wrap"></div></div></div></article></section>
+<article class="panel map-panel"><h2>Taburan pelajar mengikut negeri</h2><p>Peta interaktif Malaysia · pilih atau sentuh negeri untuk melihat statistik</p><div class="map-layout"><div><div id="stateMap" aria-label="Peta taburan pelajar mengikut negeri"><p style="padding:18px;color:#667085">Memuatkan peta negeri Malaysia…</p></div><div class="map-legend"><span>Rendah</span><div class="legend-scale"><span style="background:#dbeafe"></span><span style="background:#93c5fd"></span><span style="background:#3b82f6"></span><span style="background:#1e40af"></span></div><span>Tinggi</span></div><div class="map-note">Geometri peta dimuatkan daripada dataset GeoJSON terbuka DOSM Malaysia. Sambungan internet diperlukan.</div></div><div><div id="stateDetail" class="state-detail"><div class="state-name">Pilih negeri pada peta</div><div class="state-number">—</div><div class="state-share">Bilangan dan peratus akan dipaparkan di sini.</div></div><h3 style="font-size:14px;margin:0">Kedudukan negeri</h3><div id="stateTable" class="table-wrap"></div></div></div></article></section>
 
 <section class="panel ipu-section" aria-label="Pemantauan jerebu dan status operasi kolej">
  <h2>Pemantauan Jerebu · AQI/Indeks Kualiti Udara</h2>
@@ -290,16 +290,46 @@ const APPS_SCRIPT_API_URL='https://script.google.com/macros/s/AKfycby_ukWfLMe1Xf
 let apiCallbackCounter=0;
 function callDashboardApi(action,onSuccess,onFailure){
  if(!APPS_SCRIPT_API_URL||APPS_SCRIPT_API_URL==='PASTE_WEB_APP_EXEC_URL_HERE'){
-  const err=new Error('URL API Google Apps Script belum ditetapkan dalam APPS_SCRIPT_API_URL.');
-  if(onFailure)onFailure(err);return;
+  if(onFailure)onFailure(new Error('URL API Google Apps Script belum ditetapkan dalam APPS_SCRIPT_API_URL.'));
+  return;
  }
- const callbackName='__hepApiCallback_'+Date.now()+'_'+(++apiCallbackCounter);
- const script=document.createElement('script');let finished=false;
- const cleanup=()=>{if(finished)return;finished=true;try{delete window[callbackName]}catch(_){window[callbackName]=undefined}if(script.parentNode)script.parentNode.removeChild(script)};
- const timer=setTimeout(()=>{cleanup();if(onFailure)onFailure(new Error('Sambungan API tamat masa. Sila cuba muat semula.'));},30000);
- window[callbackName]=(response)=>{clearTimeout(timer);cleanup();if(response&&response.ok){if(onSuccess)onSuccess(response.data)}else if(onFailure){onFailure(new Error(response&&response.error?response.error:'Respons API tidak sah.'))}};
- script.onerror=()=>{clearTimeout(timer);cleanup();if(onFailure)onFailure(new Error('Tidak dapat menghubungi API Google Apps Script. Semak URL deployment dan kebenaran akses.'))};
- const url=new URL(APPS_SCRIPT_API_URL);url.searchParams.set('api','1');url.searchParams.set('action',action);url.searchParams.set('callback',callbackName);url.searchParams.set('_',String(Date.now()));script.src=url.toString();document.head.appendChild(script);
+ const requestId='hep_'+Date.now()+'_'+(++apiCallbackCounter);
+ const frame=document.createElement('iframe');
+ frame.title='Sambungan API Dashboard';
+ frame.setAttribute('aria-hidden','true');
+ frame.style.cssText='position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;border:0;opacity:0;pointer-events:none';
+ let finished=false;
+ const cleanup=()=>{
+  if(finished)return;
+  finished=true;
+  clearTimeout(timer);
+  window.removeEventListener('message',handleMessage);
+  if(frame.parentNode)frame.parentNode.removeChild(frame);
+ };
+ const fail=(message)=>{if(finished)return;cleanup();if(onFailure)onFailure(new Error(message));};
+ const handleMessage=(event)=>{
+  // Terima respons hanya daripada iframe yang dibuat untuk permintaan ini.
+  if(event.source!==frame.contentWindow)return;
+  const message=event.data;
+  if(!message||message.type!=='HEP_DASHBOARD_API'||message.requestId!==requestId)return;
+  cleanup();
+  const response=message.payload;
+  if(response&&response.ok){if(onSuccess)onSuccess(response.data);}
+  else if(onFailure){onFailure(new Error(response&&response.error?response.error:'Respons API tidak sah.'));}
+ };
+ window.addEventListener('message',handleMessage);
+ const timer=setTimeout(()=>fail('Sambungan API tamat masa. Semak deployment Web App dan cuba lagi.'),30000);
+ frame.onerror=()=>fail('Tidak dapat memuatkan iframe API Google Apps Script. Semak URL deployment dan kebenaran akses.');
+ try{
+  const url=new URL(APPS_SCRIPT_API_URL);
+  url.searchParams.set('api','1');
+  url.searchParams.set('action',action);
+  url.searchParams.set('transport','iframe');
+  url.searchParams.set('requestId',requestId);
+  url.searchParams.set('_',String(Date.now()));
+  frame.src=url.toString();
+  document.body.appendChild(frame);
+ }catch(err){fail('URL API tidak sah: '+(err&&err.message?err.message:String(err)));}
 }
 function loadDashboard(){setStatus('Sedang memuatkan data dashboard…',false);callDashboardApi('dashboard',renderDashboard,showError);loadOuting();loadIPU();loadHealth();loadFelo()}
 function switchTab(name){
