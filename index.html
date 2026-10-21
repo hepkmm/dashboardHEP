@@ -308,8 +308,13 @@ function callDashboardApi(action,onSuccess,onFailure){
  };
  const fail=(message)=>{if(finished)return;cleanup();if(onFailure)onFailure(new Error(message));};
  const handleMessage=(event)=>{
-  // Terima respons hanya daripada iframe yang dibuat untuk permintaan ini.
-  if(event.source!==frame.contentWindow)return;
+  // HtmlService boleh membungkus respons dalam iframe Google tambahan.
+  // Oleh itu, sumber mesej tidak semestinya frame.contentWindow yang asal.
+  // Hadkan origin kepada domain Google yang dijangka dan sahkan requestId unik.
+  let host='';
+  try{host=new URL(event.origin).hostname.toLowerCase();}catch(_){return;}
+  const trustedOrigin=host==='script.google.com'||host==='script.googleusercontent.com'||host.endsWith('.googleusercontent.com');
+  if(!trustedOrigin)return;
   const message=event.data;
   if(!message||message.type!=='HEP_DASHBOARD_API'||message.requestId!==requestId)return;
   cleanup();
