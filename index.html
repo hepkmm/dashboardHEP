@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ms"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://www.gstatic.com/charts/loader.js"></script><script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<style>
+:root{--navy:#13233f;--blue:#2563eb;--bg:#f4f7fb;--ink:#182230;--muted:#667085;--line:#e5eaf1}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Arial,sans-serif}header{background:linear-gradient(120deg,#13233f,#1d4ed8);color:white;padding:24px clamp(16px,4vw,42px)}.header-inner,main{max-width:1280px;margin:auto}.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}h1{margin:4px 0 0;font-size:clamp(22px,3vw,32px)}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;opacity:.8;font-weight:700}.subtitle{opacity:.85;margin-top:5px}.session{border:1px solid #ffffff55;border-radius:12px;padding:10px 14px;background:#ffffff12}main{padding:22px clamp(12px,3vw,28px) 36px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.toolbar p{margin:0;color:var(--muted)}button{border:0;background:var(--blue);color:white;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 16px #18223008}.card{padding:18px;min-height:122px}.card-label{color:var(--muted);font-weight:600}.metric{font-size:32px;font-weight:800;margin:8px 0 0}.metric-sub{color:var(--muted);font-size:12px}.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.panel{padding:18px;min-width:0}.panel h2{font-size:16px;margin:0 0 4px}.panel p{color:var(--muted);margin:0;font-size:12px}.chart{width:100%;min-height:280px;margin-top:8px}.map-panel{grid-column:1/-1}.map-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:14px;margin-top:12px;align-items:start}#stateMap{border:1px solid #edf0f5;border-radius:12px;background:#fbfdff;overflow:hidden;min-height:280px}#stateMap svg{display:block;width:100%;height:auto}.state-path{stroke:#fff;stroke-width:1.5;cursor:pointer}.state-path:hover,.state-path:focus{stroke:#13233f;stroke-width:3;outline:none}.map-legend{display:flex;align-items:center;gap:7px;margin:10px 0 14px;color:var(--muted);font-size:11px}.legend-scale{display:flex;height:9px;flex:1;border-radius:99px;overflow:hidden}.legend-scale span{flex:1}.state-detail{background:#eff6ff;border:1px solid #dbeafe;border-radius:11px;padding:12px;margin-bottom:12px}.state-name{font-weight:700}.state-number{font-size:25px;font-weight:800;color:#1d4ed8;line-height:1.3}.state-share{font-size:12px;color:#475569}.table-wrap{overflow-x:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:330px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:11px}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}.state-table button{background:transparent;color:var(--ink);font-weight:600;padding:2px 0;text-align:left}.state-table button:hover{color:var(--blue);text-decoration:underline}.status{padding:12px 14px;border-radius:10px;background:#eff6ff;color:#1e40af;margin-bottom:16px}.status.error{background:#fef2f2;color:#991b1b}.foot,.map-note{color:var(--muted);font-size:11px;margin-top:10px}@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.panels{grid-template-columns:1fr}.map-layout{grid-template-columns:1fr}.map-panel{grid-column:auto}}@media(max-width:480px){.cards{gap:9px}.card{padding:14px;min-height:108px}.metric{font-size:27px}.panel{padding:13px}}
+.outing-section{margin-top:22px}.outing-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:14px 0}.outing-field{display:flex;flex-direction:column;gap:5px;min-width:150px;flex:1}.outing-field label{font-size:12px;font-weight:700;color:var(--muted)}.outing-field input,.outing-field select{width:100%;border:1px solid #d5deea;border-radius:9px;padding:10px;background:white;color:var(--ink);font:inherit}.outing-cards{margin:12px 0}.outing-status{font-size:12px;color:var(--muted);margin:8px 0}.outing-table{min-width:760px}.outing-table tfoot{font-weight:800;background:#f1f5f9}.outing-note{font-size:12px;color:var(--muted);margin:12px 0}.outing-panel-wide{grid-column:1/-1}@media(max-width:900px){.outing-panel-wide{grid-column:auto}}
+.felo-section{margin-top:22px}.felo-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:14px}.felo-weekday{font-size:11px;font-weight:800;color:var(--muted);text-align:center;padding:7px 2px}.felo-day{background:#fff;border:1px solid var(--line);border-radius:10px;min-height:112px;padding:8px;min-width:0}.felo-day.empty{background:#f8fafc;border-style:dashed}.felo-day.today{border:2px solid #2563eb}.felo-date{font-weight:800;font-size:12px;margin-bottom:6px}.felo-assignment{font-size:11px;line-height:1.35;background:#eff6ff;border-left:3px solid #2563eb;border-radius:5px;padding:5px;margin-top:5px;overflow-wrap:anywhere}.felo-shift{font-weight:700;color:#1d4ed8}.felo-note{font-size:11px;color:var(--muted);margin-top:4px}.felo-table{min-width:560px}.felo-section{margin-top:22px}.health-section{margin-top:22px}.health-table{min-width:620px}.health-note{font-size:12px;color:var(--muted);margin:12px 0}.health-panel-wide{grid-column:1/-1}@media(max-width:900px){.health-panel-wide{grid-column:auto}}
+.tab-nav{display:flex;gap:8px;margin:0 0 18px;padding:6px;background:#e9eef7;border-radius:12px;width:max-content;max-width:100%}
+.tab-button{background:transparent;color:#334155;padding:10px 18px;border-radius:9px}
+.tab-button[aria-selected="true"]{background:#1d4ed8;color:#fff;box-shadow:0 2px 6px #13233f1c}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.ipu-section{margin-top:18px}.ipu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.ipu-card{border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff;min-width:0}
+.ipu-day{font-weight:700;color:#475569;font-size:12px}.ipu-date{font-size:11px;color:var(--muted);margin-top:2px}
+.ipu-value{font-size:32px;font-weight:800;margin:8px 0 2px}.ipu-category{font-size:12px;font-weight:700}
+.ipu-sensitive{color:#c2410c}.ipu-good{color:#15803d}.ipu-moderate{color:#a16207}.ipu-unhealthy{color:#b91c1c}.ipu-vunhealthy{color:#7e22ce}.ipu-hazardous{color:#7f1d1d}.ipu-na{color:#64748b}
+.env-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:14px;margin-top:14px}
+.env-box{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:14px}
+.env-status{font-size:20px;font-weight:800;margin:5px 0}.env-note{color:var(--muted);font-size:12px}
+.ipu-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.secondary-link{display:inline-block;text-decoration:none;background:#eff6ff;color:#1d4ed8;padding:9px 12px;border-radius:8px;font-weight:700}
+.ipu-footnote{font-size:11px;color:var(--muted);margin-top:12px}
+@media(max-width:700px){.ipu-grid{grid-template-columns:1fr}.env-grid{grid-template-columns:1fr}.tab-nav{width:100%}.tab-button{flex:1}}
+
+/* ===== UI refinement: KMM HEP dashboard ===== */
+:root{
+ --navy:#10213b;--blue:#2458d3;--blue-dark:#1947b8;--bg:#f3f6fb;--ink:#17253b;
+ --muted:#64748b;--line:#e2e8f0;--teal:#0f766e;--amber:#b45309;--purple:#6d28d9;
+ --card-shadow:0 8px 26px rgba(15,35,65,.055);
+}
+body{font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef3fb 0,#f7f9fc 260px,#f5f7fb 100%);color:var(--ink)}
+header{position:relative;overflow:hidden;background:linear-gradient(115deg,#10213b 0%,#173e79 54%,#2458d3 100%);padding-top:28px;padding-bottom:30px}
+header:after{content:"";position:absolute;width:360px;height:360px;border:1px solid #ffffff20;border-radius:50%;right:-90px;top:-210px;box-shadow:0 0 0 34px #ffffff09,0 0 0 70px #ffffff06;pointer-events:none}
+.header-inner{position:relative;z-index:1}
+.header-inner>div:first-child{max-width:760px}
+h1{font-weight:800;letter-spacing:-.035em;line-height:1.15}
+.subtitle{font-size:14px;max-width:560px;line-height:1.6}
+.session{min-width:180px;backdrop-filter:blur(8px);border-color:#ffffff35;border-radius:14px;box-shadow:0 8px 24px #07152c20}
+main{padding-top:20px}
+.toolbar{margin-bottom:14px}
+#updatedAt{display:flex;align-items:center;gap:8px;font-size:12px}
+button{transition:transform .16s ease,background .16s ease,box-shadow .16s ease;box-shadow:0 2px 5px #1d4ed80b}
+button:hover{background:var(--blue-dark);box-shadow:0 5px 14px #1d4ed820}
+button:active{transform:translateY(1px)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.status{display:flex;align-items:flex-start;gap:10px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;padding:12px 15px;line-height:1.5}
+.status:before{content:"✓";display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#dbeafe;font-weight:900}
+.status.error{border-color:#fecaca;background:#fff1f2;color:#9f1239}
+.status.error:before{content:"!";background:#ffe4e6}
+.tab-nav{position:sticky;top:8px;z-index:20;display:flex;gap:5px;width:100%;padding:6px;margin:0 0 20px;background:#e8edf6eF;border:1px solid #dce4ef;border-radius:14px;box-shadow:0 6px 20px #12233e0b;overflow-x:auto;scrollbar-width:thin}
+.tab-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;flex:1;background:transparent;color:#43516a;padding:11px 14px;min-height:42px;border-radius:10px;box-shadow:none;font-size:13px}
+.tab-button:hover{background:#ffffffa8;color:#1e40af;box-shadow:none}
+.tab-button[aria-selected="true"]{background:#fff;color:#1748b6;box-shadow:0 2px 8px #10213b14}
+.tab-button .ui-icon{width:17px;height:17px;flex:0 0 17px}
+.tab-panel.active{animation:panel-in .22s ease-out}
+@keyframes panel-in{from{opacity:.55;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.cards{gap:13px}
+.card,.panel{border:1px solid #e1e8f1;border-radius:17px;box-shadow:var(--card-shadow);transition:box-shadow .18s ease,border-color .18s ease}
+.card:hover,.panel:hover{border-color:#d4deec;box-shadow:0 10px 28px rgba(15,35,65,.075)}
+.card{position:relative;overflow:hidden;padding:17px 18px;min-height:132px}
+.card:after{content:"";position:absolute;width:84px;height:84px;right:-35px;bottom:-42px;border-radius:50%;background:var(--accent-soft,#eff6ff);opacity:.75}
+.card-label{display:flex;align-items:center;gap:8px;min-height:28px;padding-right:28px;font-size:12px;line-height:1.4;color:#58677e}
+.card-icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:var(--accent-soft,#eff6ff);color:var(--accent,#2458d3);flex:0 0 34px;margin-bottom:10px}
+.card-icon .ui-icon{width:18px;height:18px}
+.metric{font-size:clamp(27px,3vw,34px);line-height:1.15;letter-spacing:-.04em;color:#142844;margin:8px 0 5px;font-variant-numeric:tabular-nums}
+.metric-sub{font-size:11px;line-height:1.45;color:#738198;max-width:95%}
+.panels{gap:15px;margin-top:15px}
+.panel{padding:19px;min-width:0}
+.panel h2{display:flex;align-items:center;gap:9px;font-size:15px;letter-spacing:-.01em;color:#182b47;margin:0 0 5px;line-height:1.4}
+.panel h2 .heading-icon{width:30px;height:30px;border-radius:10px;background:#eff6ff;color:#2458d3;display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px}
+.panel h2 .ui-icon{width:16px;height:16px}
+.panel>p{line-height:1.55;color:#718096;font-size:12px}
+.chart{min-height:245px;margin-top:10px}
+.table-wrap{margin-top:14px;border:1px solid #edf1f6;border-radius:12px;overflow-x:auto}
+table{min-width:330px;border-collapse:separate;border-spacing:0}
+th,td{padding:11px 10px;border-bottom:1px solid #edf1f6}
+th{background:#f8fafc;color:#718096;font-size:10px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+tbody tr:hover{background:#f8fbff}
+tbody tr:last-child td{border-bottom:0}
+tfoot{background:#f0f5fc}
+.state-detail{border-radius:13px;background:linear-gradient(135deg,#eff6ff,#f8fbff);border-color:#dbeafe}
+.state-number{font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+#stateMap{background:linear-gradient(135deg,#f8fbff,#eef5ff);border-color:#e3ebf6}
+.map-legend{margin-top:12px}
+.outing-section,.health-section,.felo-section{margin-top:0}
+.outing-section>.panel,.health-section>.panel,.felo-section>.panel{padding:20px}
+.outing-toolbar{align-items:end;gap:11px;margin:16px 0 12px}
+.outing-field{min-width:145px}
+.outing-field label{font-size:11px;letter-spacing:.01em;color:#53647c}
+.outing-field input,.outing-field select{border-color:#dbe3ee;border-radius:10px;padding:11px 12px;min-height:42px;box-shadow:0 1px 2px #10213b05}
+.outing-field input:focus,.outing-field select:focus{border-color:#7aa7f8}
+.outing-toolbar>button{min-height:42px;white-space:nowrap}
+.outing-status{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:10px;background:#f8fafc;border:1px solid #edf1f6;color:#607086;line-height:1.5}
+.outing-status:before{content:"i";display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#e0ecff;color:#2458d3;font-weight:800;flex:0 0 19px}
+.outing-cards{margin:14px 0}
+.outing-cards .card:nth-child(1){--accent:#2458d3;--accent-soft:#eaf1ff}
+.outing-cards .card:nth-child(2){--accent:#0f766e;--accent-soft:#e6f7f4}
+.outing-cards .card:nth-child(3){--accent:#b45309;--accent-soft:#fff4df}
+.outing-cards .card:nth-child(4){--accent:#6d28d9;--accent-soft:#f2eaff}
+.ipu-section{padding:20px;margin-top:16px}
+.ipu-section>h2{font-size:16px}
+.ipu-grid{gap:12px}
+.ipu-card{position:relative;overflow:hidden;border-color:#e1e8f1;border-radius:15px;padding:17px;background:linear-gradient(145deg,#fff,#fbfdff);box-shadow:0 4px 14px #10213b05}
+.ipu-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#cbd5e1}
+.ipu-card:nth-child(1):before{background:#94a3b8}
+.ipu-card:nth-child(2):before{background:#60a5fa}
+.ipu-card:nth-child(3):before{background:#2458d3}
+.ipu-day{font-size:12px;letter-spacing:.02em}
+.ipu-value{font-size:36px;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.env-grid{gap:13px}
+.env-box{border-radius:14px;padding:16px;background:#f8fafc}
+.env-status{display:flex;align-items:center;gap:8px;font-size:19px}
+.ipu-actions{gap:8px}
+.secondary-link{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;border-radius:9px;font-size:12px;transition:background .16s ease}
+.secondary-link:hover{background:#dbeafe}
+.health-note,.outing-note,.foot,.ipu-footnote{line-height:1.65}
+.felo-calendar{gap:6px}
+.felo-weekday{padding:8px 2px;background:#f8fafc;border-radius:8px;color:#65748a}
+.felo-day{position:relative;border-color:#e5eaf2;border-radius:12px;min-height:120px;padding:9px;background:#fff;transition:border-color .15s,box-shadow .15s}
+.felo-day:not(.empty):hover{border-color:#a9c4f5;box-shadow:0 4px 12px #2458d310}
+.felo-day.empty{background:#f8fafc;min-height:74px}
+.felo-day.today{border:2px solid #2458d3;background:#f8fbff}
+.felo-date{display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:9px;background:#f1f5f9;color:#43516a;margin-bottom:7px}
+.felo-day.today .felo-date{background:#2458d3;color:white}
+.felo-assignment{background:#eef4ff;border-left-color:#4f7fe3;border-radius:7px;padding:6px;margin-top:6px}
+.felo-shift{font-size:10px}
+.felo-note{line-height:1.4}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px 16px;min-height:180px;color:#7a879a}
+.empty-state .empty-icon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:#f1f5fb;color:#8a9ab1}
+.empty-state .ui-icon{width:22px;height:22px}
+.empty-state strong{font-size:13px;color:#46566e}
+.empty-state span{max-width:320px;font-size:12px;line-height:1.55}
+.ui-icon{display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.chart-empty{min-height:230px}
+#feloCalendar:empty:after{content:"Kalendar akan dipaparkan selepas jadual dimuatkan.";display:block;padding:28px;text-align:center;color:#8a97a9;grid-column:1/-1}
+@media(max-width:900px){
+ .tab-nav{position:relative;top:auto}
+ .tab-button{padding:10px 12px}
+ .felo-day{min-height:100px;padding:6px}
+ .felo-assignment{font-size:10px;padding:5px}
+}
+@media(max-width:640px){
+ header{padding:22px 16px 24px}
+ .session{width:100%;min-width:0}
+ main{padding:15px 10px 28px}
+ .toolbar{align-items:stretch}
+ .toolbar>button{width:100%}
+ .tab-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px}
+ .tab-button{justify-content:flex-start;font-size:12px;padding:10px 9px;white-space:normal}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .card{padding:13px;min-height:126px;border-radius:14px}
+ .card-label{font-size:11px;min-height:32px}
+ .card-icon{width:30px;height:30px;flex-basis:30px;border-radius:9px;margin-bottom:8px}
+ .metric{font-size:26px}
+ .metric-sub{font-size:10px}
+ .panels{gap:11px;margin-top:11px}
+ .panel{padding:14px;border-radius:14px}
+ .panel h2{font-size:14px}
+ .chart{min-height:220px}
+ .map-layout{gap:10px}
+ .ipu-section{padding:14px}
+ .ipu-grid{grid-template-columns:1fr;gap:9px}
+ .ipu-card{padding:13px 15px}
+ .ipu-value{font-size:30px;margin:4px 0 1px}
+ .env-grid{grid-template-columns:1fr}
+ .outing-section>.panel,.health-section>.panel,.felo-section>.panel{padding:14px}
+ .outing-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .outing-field{min-width:0}
+ .outing-toolbar>button{width:100%;padding:10px 8px;font-size:12px}
+ .outing-cards .card{min-height:132px}
+ .felo-calendar{gap:3px}
+ .felo-weekday{font-size:9px;padding:6px 0}
+ .felo-day{min-height:78px;padding:4px;border-radius:8px}
+ .felo-day.empty{min-height:40px}
+ .felo-date{width:22px;height:22px;font-size:10px;margin-bottom:4px}
+ .felo-assignment{font-size:9px;padding:4px 3px;margin-top:4px}
+ .felo-note{font-size:9px}
+ .empty-state{min-height:150px}
+}
+
+</style></head><body>
+<header><div class="header-inner"><div><div class="eyebrow">Pengurusan Pelajar KMM (HEP)</div><h1 id="collegeName">Dashboard Statistik HEP</h1><div class="subtitle">Ringkasan statistik pelajar dan kolej kediaman</div></div><div class="session"><div class="eyebrow">Sesi paparan</div><strong id="sessionName">Memuatkan…</strong></div></div></header>
+<main><div class="toolbar"><p id="updatedAt">Menyambungkan kepada Google Sheets…</p><button class="refresh-main" onclick="loadDashboard()"><span class="button-icon" aria-hidden="true">↻</span> Muat semula data</button></div><div id="status" class="status" role="status">Sedang memuatkan data dashboard…</div>
+<nav class="tab-nav" role="tablist" aria-label="Bahagian dashboard HEP">
+ <button type="button" class="tab-button" id="tabButtonGeneral" role="tab" aria-selected="true" aria-controls="tab-general" onclick="switchTab('general')"><span class="tab-label">Umum</span></button>
+ <button type="button" class="tab-button" id="tabButtonOuting" role="tab" aria-selected="false" aria-controls="tab-outing" onclick="switchTab('outing')"><span class="tab-label">Outing</span></button>
+ <button type="button" class="tab-button" id="tabButtonHealth" role="tab" aria-selected="false" aria-controls="tab-health" onclick="switchTab('health')"><span class="tab-label">Kesihatan Pelajar</span></button>
+ <button type="button" class="tab-button" id="tabButtonFelo" role="tab" aria-selected="false" aria-controls="tab-felo" onclick="switchTab('felo')"><span class="tab-label">Jadual Felo</span></button>
+</nav>
+<section id="tab-general" class="tab-panel active" role="tabpanel" aria-labelledby="tabButtonGeneral">
+<section class="cards"><article class="card"><div class="card-label">Jumlah pelajar aktif</div><div class="metric" id="totalStudents">—</div><div class="metric-sub">Berdasarkan sesi aktif</div></article><article class="card"><div class="card-label">Blok berpenghuni</div><div class="metric" id="blockCount">—</div><div class="metric-sub">Blok dengan rekod penghuni</div></article><article class="card"><div class="card-label">Negeri diwakili</div><div class="metric" id="stateCount">—</div><div class="metric-sub">Negeri asal dalam rekod</div></article><article class="card"><div class="card-label">Purata pelajar / blok</div><div class="metric" id="avgBlock">—</div><div class="metric-sub">Anggaran bagi blok berpenghuni</div></article></section>
+<section class="panels"><article class="panel"><h2>Taburan pelajar mengikut blok</h2><p>Bilangan pelajar aktif bagi setiap blok kediaman</p><div id="blockChart" class="chart"></div><div id="blockTable" class="table-wrap"></div></article><article class="panel"><h2>Taburan mengikut program</h2><p>Bilangan pelajar mengikut program</p><div id="programChart" class="chart"></div></article><article class="panel"><h2>Taburan mengikut jantina</h2><p>Ringkasan data demografi</p><div id="genderChart" class="chart"></div></article>
+<article class="panel map-panel"><h2>Taburan pelajar mengikut negeri</h2><p>Peta interaktif Malaysia · pilih atau sentuh negeri untuk melihat statistik</p><div class="map-layout"><div><div id="stateMap" aria-label="Peta taburan pelajar mengikut negeri"><p style="padding:18px;color:#667085">Memuatkan peta negeri Malaysia…</p></div><div class="map-legend"><span>Rendah</span><div class="legend-scale"><span style="background:#dbeafe"></span><span style="background:#93c5fd"></span><span style="background:#3b82f6"></span><span style="background:#1e40af"></span></div><span>Tinggi</span></div><div class="map-note">Geometri peta dimuatkan daripada dataset GeoJSON terbuka DOSM Malaysia. Sambungan internet diperlukan.</div></div><div><div id="stateDetail" class="state-detail"><div class="state-name">Pilih negeri pada peta</div><div class="state-number">—</div><div class="state-share">Bilangan dan peratus akan dipaparkan di sini.</div></div><h3 style="font-size:14px;margin:0">Kedudukan negeri</h3><div id="stateTable" class="table-wrap"></div></div></div></article></section>
+
+<section class="panel ipu-section" aria-label="Pemantauan jerebu dan status operasi kolej">
+ <h2>Pemantauan Jerebu · AQI/Indeks Kualiti Udara</h2>
+ <p>Bacaan semasa daripada stesen Alor Gajah melalui WAQI/AQICN. Rekod harian disimpan dalam Google Sheets untuk paparan hari ini, semalam dan kelmarin; status operasi kolej kekal ditetapkan secara manual.</p>
+ <div class="env-note" id="ipuStationInfo">Stesen rujukan: memuatkan…</div>
+ <div class="ipu-grid" id="ipuCards">
+  <article class="ipu-card"><div class="ipu-day">Kelmarin</div><div class="ipu-value">—</div><div class="ipu-category">Memuatkan bacaan</div></article>
+  <article class="ipu-card"><div class="ipu-day">Semalam</div><div class="ipu-value">—</div><div class="ipu-category">Memuatkan bacaan</div></article>
+  <article class="ipu-card"><div class="ipu-day">Hari ini</div><div class="ipu-value">—</div><div class="ipu-category">Memuatkan bacaan</div></article>
+ </div>
+ <div class="env-grid">
+  <div class="env-box">
+   <div class="card-label">Status operasi kolej</div>
+   <div class="env-status" id="collegeOperationStatus">Belum ditetapkan</div>
+   <div class="env-note" id="collegeOperationNote">Status perlu dikemas kini oleh pentadbir berdasarkan arahan rasmi.</div>
+   <div class="env-note" id="collegeOperationUpdated"></div>
+  </div>
+  <div class="env-box">
+   <div class="card-label">Sumber dan tindakan</div>
+   <p class="env-note">Gunakan bacaan rasmi JAS/APIMS untuk pemantauan. Status operasi kolej diputuskan dan direkodkan oleh pentadbir HEP berdasarkan arahan rasmi, bukan ditukar secara automatik oleh sistem.</p>
+   <div class="ipu-actions"><a class="secondary-link" href="https://aqicn.org/city/malaysia/melaka/alor-gajah/" target="_blank" rel="noopener">Buka stesen AQICN ↗</a><a class="secondary-link" href="https://eqms.doe.gov.my/apims/main" target="_blank" rel="noopener">Semak APIMS rasmi ↗</a><button type="button" onclick="loadIPU()">↻ Muat semula IPU</button></div>
+  </div>
+ </div>
+ <div class="ipu-footnote" id="ipuSourceInfo">Sumber bacaan dan masa kemas kini akan dipaparkan di sini.</div>
+ <div class="ipu-footnote">Kategori AQI WAQI: 0–50 Baik; 51–100 Sederhana; 101–150 Tidak sihat bagi kumpulan sensitif; 151–200 Tidak sihat; 201–300 Sangat tidak sihat; melebihi 300 Berbahaya. Skala ini mungkin berbeza daripada IPU Malaysia. Status operasi kolej tidak ditentukan secara automatik daripada bacaan ini.</div>
+</section>
+</section>
+
+<section id="tab-outing" class="tab-panel" role="tabpanel" aria-labelledby="tabButtonOuting">
+<section class="outing-section" aria-label="Statistik pergerakan pelajar">
+ <div class="panel"><h2>Statistik Pergerakan Pelajar</h2><p>Outing biasa, outing khas, bermalam biasa dan bermalam khas · mengikut tarikh, jantina dan status pergerakan</p>
+ <div class="outing-toolbar">
+  <div class="outing-field"><label for="outingStart">Tarikh mula</label><input type="date" id="outingStart" onchange="renderOuting()"></div>
+  <div class="outing-field"><label for="outingEnd">Tarikh akhir</label><input type="date" id="outingEnd" onchange="renderOuting()"></div>
+  <div class="outing-field"><label for="outingType">Jenis outing</label><select id="outingType" onchange="renderOuting()"><option value="">Semua jenis</option><option>Outing Biasa</option><option>Outing Khas</option><option>Bermalam Khas</option><option>Bermalam Biasa</option></select></div>
+  <div class="outing-field"><label for="outingGroup">Trend mengikut</label><select id="outingGroup" onchange="renderOuting()"><option value="day">Harian</option><option value="week">Mingguan</option><option value="month">Bulanan</option></select></div>
+  <button type="button" onclick="resetOutingDates()">Semua tarikh</button>
+ </div><div class="outing-status" id="outingStatus">Sedang memuatkan statistik keluar…</div></div>
+ <div class="cards outing-cards">
+  <article class="card"><div class="card-label">Jumlah KELUAR</div><div class="metric" id="outingTotalOut">—</div><div class="metric-sub" id="outingTotalOutSub">Lelaki · Perempuan</div></article>
+  <article class="card"><div class="card-label">Jumlah MASUK</div><div class="metric" id="outingTotalIn">—</div><div class="metric-sub" id="outingTotalInSub">Lelaki · Perempuan</div></article>
+  <article class="card"><div class="card-label">Perbezaan pergerakan</div><div class="metric" id="outingNet">—</div><div class="metric-sub">KELUAR − MASUK dalam tempoh dipilih</div></article>
+  <article class="card"><div class="card-label">Tarikh direkodkan</div><div class="metric" id="outingDays">—</div><div class="metric-sub">Bilangan hari dengan rekod</div></article>
+ </div>
+ <div class="panels"><article class="panel"><h2>Pergerakan mengikut jenis</h2><p>Jumlah KELUAR dan MASUK bagi setiap kategori</p><div class="chart" id="outingTypeChart"></div></article>
+ <article class="panel"><h2>Pergerakan mengikut jantina</h2><p>Perbandingan lelaki dan perempuan</p><div class="chart" id="outingGenderChart"></div></article>
+ <article class="panel outing-panel-wide"><h2>Trend pergerakan</h2><p>Harian, mingguan atau bulanan mengikut penapis</p><div class="chart" id="outingTrendChart"></div></article>
+ <article class="panel outing-panel-wide"><h2>Jadual statistik pergerakan</h2><p>Jumlah mengikut tarikh dan jenis outing</p><div class="table-wrap" id="outingTable"></div></article></div>
+ <p class="outing-note">Nota: Statistik ini merekod bilangan pergerakan, bukan semestinya bilangan individu unik. Perbezaan KELUAR − MASUK tidak boleh dianggap sebagai bilangan pelajar yang masih berada di luar kolej tanpa data baki awal dan pemadanan pergerakan.</p>
+</section>
+</section>
+
+<section id="tab-health" class="tab-panel" role="tabpanel" aria-labelledby="tabButtonHealth">
+ <section class="health-section" aria-label="Statistik kesihatan pelajar">
+  <div class="panel"><h2>Statistik Kesihatan Pelajar</h2><p>Data agregat sahaja · bilangan lawatan klinik termasuk lawatan berulang oleh pelajar yang sama</p>
+   <div class="outing-toolbar">
+    <div class="outing-field"><label for="healthStart">Tarikh mula</label><input type="date" id="healthStart" onchange="renderHealth()"></div>
+    <div class="outing-field"><label for="healthEnd">Tarikh akhir</label><input type="date" id="healthEnd" onchange="renderHealth()"></div>
+    <div class="outing-field"><label for="healthGroup">Trend mengikut</label><select id="healthGroup" onchange="renderHealth()"><option value="day">Harian</option><option value="week">Mingguan</option><option value="month">Bulanan</option></select></div>
+    <button type="button" onclick="resetHealthDates()">Semua tarikh</button>
+   </div><div class="outing-status" id="healthStatus">Sedang memuatkan statistik kesihatan…</div>
+  </div>
+  <div class="cards outing-cards">
+   <article class="card"><div class="card-label">Lawatan klinik (waktu pejabat)</div><div class="metric" id="healthOffice">—</div><div class="metric-sub">Jumlah lawatan, termasuk lawatan berulang</div></article>
+   <article class="card"><div class="card-label">Lawatan klinik (luar waktu pejabat)</div><div class="metric" id="healthAfterHours">—</div><div class="metric-sub">Jumlah lawatan, termasuk lawatan berulang</div></article>
+   <article class="card"><div class="card-label">Jumlah lawatan klinik</div><div class="metric" id="healthClinicTotal">—</div><div class="metric-sub">Waktu pejabat + luar waktu pejabat</div></article>
+   <article class="card"><div class="card-label">Kemasukan wad</div><div class="metric" id="healthWard">—</div><div class="metric-sub">Jumlah kemasukan direkodkan, bukan pelajar unik</div></article>
+  </div>
+  <div class="panels">
+   <article class="panel"><h2>Perbandingan lawatan klinik</h2><p>Waktu pejabat berbanding luar waktu pejabat</p><div class="chart" id="healthClinicChart"></div></article>
+   <article class="panel"><h2>Jumlah kemasukan wad</h2><p>Jumlah bagi tempoh yang dipilih</p><div class="chart" id="healthWardChart"></div></article>
+   <article class="panel health-panel-wide"><h2>Trend kesihatan pelajar</h2><p>Harian, mingguan atau bulanan mengikut penapis</p><div class="chart" id="healthTrendChart"></div></article>
+   <article class="panel health-panel-wide"><h2>Jadual statistik kesihatan</h2><p>Ringkasan mengikut tarikh</p><div class="table-wrap" id="healthTable"></div></article>
+  </div>
+  <p class="health-note">Privasi: helaian ini hanya menyimpan jumlah agregat. Jangan masukkan nama, nombor matrik, diagnosis, atau butiran perubatan individu. Jumlah klinik mengira lawatan, maka seorang pelajar yang hadir beberapa kali dikira beberapa lawatan.</p>
+ </section>
+</section>
+<section id="tab-felo" class="tab-panel" role="tabpanel" aria-labelledby="tabButtonFelo">
+ <section class="felo-section" aria-label="Jadual giliran felo bertugas">
+  <div class="panel"><h2>Jadual Bertugas Felo</h2><p>Jadual bulanan mengikut giliran felo bertugas. Satu tarikh boleh mempunyai lebih daripada satu penugasan.</p>
+   <div class="outing-toolbar"><div class="outing-field"><label for="feloMonth">Pilih bulan</label><input type="month" id="feloMonth" onchange="renderFelo()"></div><button type="button" onclick="setFeloCurrentMonth()">Bulan semasa</button><button type="button" onclick="loadFelo()">↻ Muat semula jadual</button></div>
+   <div class="outing-status" id="feloStatus">Sedang memuatkan jadual felo…</div>
+  </div>
+  <article class="panel" style="margin-top:16px"><h2>Kalendar bulanan</h2><p>Nama felo dan giliran dipaparkan pada tarikh bertugas</p><div id="feloCalendar" class="felo-calendar"></div></article>
+  <article class="panel" style="margin-top:16px"><h2>Senarai giliran bulan dipilih</h2><p>Senarai penugasan mengikut tarikh</p><div class="table-wrap" id="feloTable"></div></article>
+  <p class="health-note">Sumber data: tab Google Sheets <strong>JadualFelo</strong>. Masukkan jadual yang telah disahkan oleh urus setia; dashboard memaparkan rekod dan tidak menjana giliran secara automatik.</p>
+ </section>
+</section>
+<div class="foot">Paparan statistik agregat untuk kegunaan HEP dan pihak pengurusan yang diberi kebenaran. Elakkan memasukkan maklumat sensitif yang tidak diperlukan.</div></main>
+<script>
+google.charts.load('current',{packages:['corechart']});google.charts.setOnLoadCallback(loadDashboard);
+const GEOJSON_URL='https://raw.githubusercontent.com/dosm-malaysia/data-open/main/datasets/geodata/administrative_1_state.geojson';
+const ALIASES=[['01',['johor']],['02',['kedah']],['03',['kelantan']],['04',['melaka','malacca']],['05',['negeri sembilan','negeri_sembilan']],['06',['pahang']],['07',['pulau pinang','penang','pulau_pinang']],['08',['perak']],['09',['perlis']],['10',['selangor']],['11',['terengganu']],['12',['sabah']],['13',['sarawak']],['14',['kuala lumpur','wilayah persekutuan kuala lumpur','w.p. kuala lumpur','wp kuala lumpur']],['15',['labuan','wilayah persekutuan labuan','w.p. labuan','wp labuan']],['16',['putrajaya','wilayah persekutuan putrajaya','w.p. putrajaya','wp putrajaya']]];
+let lastData=null,geoFeatures=null,selectedCode=null;
+// URL deployment Web App Google Apps Script yang berakhir dengan /exec.
+// Gantikan nilai ini sebelum menerbitkan index.html ke GitHub Pages.
+const APPS_SCRIPT_API_URL='https://script.google.com/macros/s/AKfycbyxNHyA49LVQ46EHIfzDRhLnSy7Cro9onGNrV6NDOeD1J1jK0JoRcf5TKS2ljYmZ_vtfw/exec';
+let apiCallbackCounter=0;
+function callDashboardApi(action,onSuccess,onFailure){
+ if(!APPS_SCRIPT_API_URL||APPS_SCRIPT_API_URL==='PASTE_WEB_APP_EXEC_URL_HERE'){
+  const err=new Error('URL API Google Apps Script belum ditetapkan dalam APPS_SCRIPT_API_URL.');
+  if(onFailure)onFailure(err);return;
+ }
+ const callbackName='__hepApiCallback_'+Date.now()+'_'+(++apiCallbackCounter);
+ const script=document.createElement('script');let finished=false;
+ const cleanup=()=>{if(finished)return;finished=true;try{delete window[callbackName]}catch(_){window[callbackName]=undefined}if(script.parentNode)script.parentNode.removeChild(script)};
+ const timer=setTimeout(()=>{cleanup();if(onFailure)onFailure(new Error('Sambungan API tamat masa. Sila cuba muat semula.'));},30000);
+ window[callbackName]=(response)=>{clearTimeout(timer);cleanup();if(response&&response.ok){if(onSuccess)onSuccess(response.data)}else if(onFailure){onFailure(new Error(response&&response.error?response.error:'Respons API tidak sah.'))}};
+ script.onerror=()=>{clearTimeout(timer);cleanup();if(onFailure)onFailure(new Error('Tidak dapat menghubungi API Google Apps Script. Semak URL deployment dan kebenaran akses.'))};
+ const url=new URL(APPS_SCRIPT_API_URL);url.searchParams.set('api','1');url.searchParams.set('action',action);url.searchParams.set('callback',callbackName);url.searchParams.set('_',String(Date.now()));script.src=url.toString();document.head.appendChild(script);
+}
+function loadDashboard(){setStatus('Sedang memuatkan data dashboard…',false);callDashboardApi('dashboard',renderDashboard,showError);loadOuting();loadIPU();loadHealth();loadFelo()}
+function switchTab(name){
+ const general=name==='general', outing=name==='outing', health=name==='health', felo=name==='felo';
+ document.getElementById('tab-general').classList.toggle('active',general);
+ document.getElementById('tab-outing').classList.toggle('active',outing);
+ document.getElementById('tab-health').classList.toggle('active',health);
+ document.getElementById('tab-felo').classList.toggle('active',felo);
+ document.getElementById('tabButtonGeneral').setAttribute('aria-selected',String(general));
+ document.getElementById('tabButtonOuting').setAttribute('aria-selected',String(outing));
+ document.getElementById('tabButtonHealth').setAttribute('aria-selected',String(health));
+ document.getElementById('tabButtonFelo').setAttribute('aria-selected',String(felo));
+ if(outing&&outingData)renderOuting();
+ if(health&&healthData)renderHealth();
+ if(felo&&feloData)renderFelo();
+ if(general&&lastData){google.charts.setOnLoadCallback(()=>{drawBar('blockChart',lastData.blockStats.map(x=>[x.label,x.students]),'Blok','Bilangan pelajar');drawBar('programChart',lastData.byProgram.map(x=>[x.label,x.value]),'Program','Bilangan pelajar');drawPie('genderChart',lastData.byGender.map(x=>[x.label,x.value]));if(geoFeatures)drawMap(lastData.byState||[]);});}
+}
+function loadIPU(){
+ const stationInfo=document.getElementById('ipuStationInfo');if(stationInfo)stationInfo.textContent='Memuatkan bacaan IPU dan status operasi…';
+ callDashboardApi('ipu',renderIPU,e=>{if(stationInfo)stationInfo.textContent='Data IPU tidak dapat dimuatkan: '+(e&&e.message?e.message:e);});
+}
+function ipuCategory(v){
+ if(v===null||v===undefined||v==='')return {label:'Belum tersedia',cls:'ipu-na'};
+ const n=Number(v);if(!Number.isFinite(n))return {label:'Belum tersedia',cls:'ipu-na'};
+ // Kategori AQI WAQI: tidak sama sepenuhnya dengan kategori IPU Malaysia.
+ if(n<=50)return {label:'Baik',cls:'ipu-good'};
+ if(n<=100)return {label:'Sederhana',cls:'ipu-moderate'};
+ if(n<=150)return {label:'Tidak sihat bagi kumpulan sensitif',cls:'ipu-sensitive'};
+ if(n<=200)return {label:'Tidak sihat',cls:'ipu-unhealthy'};
+ if(n<=300)return {label:'Sangat tidak sihat',cls:'ipu-vunhealthy'};
+ return {label:'Berbahaya',cls:'ipu-hazardous'};
+}
+function renderIPU(d){
+ const station=esc(d.station||'Alor Gajah');
+ document.getElementById('ipuStationInfo').textContent='Stesen rujukan: '+station+' (ID '+esc(d.stationId||'9491')+') · Sumber: WAQI / AQICN';
+ const cards=document.getElementById('ipuCards');
+ const labels=['Kelmarin','Semalam','Hari ini'];
+ cards.innerHTML=(d.days||[]).map((r,i)=>{
+   const cat=ipuCategory(r.ipu);
+   const value=(r.ipu===null||r.ipu===undefined||r.ipu==='')?'—':fmt(r.ipu);
+   const detail=r.time?'Masa bacaan: '+esc(r.time):(r.note||'Tiada bacaan tersedia');
+   const note=r.note?'<div class="env-note">'+esc(r.note)+'</div>':'';
+   return '<article class="ipu-card"><div class="ipu-day">'+labels[i]+'</div><div class="ipu-date">'+esc(r.dateLabel||'Tarikh tidak tersedia')+'</div><div class="ipu-value '+cat.cls+'">'+value+'</div><div class="ipu-category '+cat.cls+'">'+cat.label+'</div><div class="env-note">'+detail+'</div>'+note+'</article>';
+ }).join('');
+ const op=String(d.operationStatus||'').trim()||'Belum ditetapkan';
+ document.getElementById('collegeOperationStatus').textContent=op;
+ document.getElementById('collegeOperationNote').textContent=d.operationNote||'Pentadbir HEP perlu mengemas kini status berdasarkan arahan rasmi.';
+ document.getElementById('collegeOperationUpdated').textContent=d.operationUpdated?('Kemas kini status: '+d.operationUpdated):'Tarikh kemas kini belum direkodkan.';
+ document.getElementById('ipuSourceInfo').innerHTML='Sumber bacaan: <a href="'+esc(d.sourceUrl||'https://aqicn.org/city/malaysia/melaka/alor-gajah/')+'" target="_blank" rel="noopener">World Air Quality Index (WAQI / AQICN)</a>. Paparan dijana '+(d.generatedAt?new Date(d.generatedAt).toLocaleString('ms-MY'):'')+'. Bacaan hari ini disimpan dan dikemas kini secara berkala dalam rekod sejarah. Sila semak <a href="https://eqms.doe.gov.my/apims/main" target="_blank" rel="noopener">APIMS JAS</a> untuk rujukan rasmi Malaysia.';
+}
+function setStatus(m,e){const el=document.getElementById('status');el.textContent=m;el.className=e?'status error':'status'}
+function showError(e){setStatus('Tidak dapat memuatkan data: '+(e&&e.message?e.message:e),true);document.getElementById('updatedAt').textContent='Semak nama helaian, kebenaran akses dan tetapan Apps Script.'}
+function renderDashboard(d){lastData=d;document.getElementById('collegeName').textContent=d.collegeName||'Dashboard Statistik HEP';document.getElementById('sessionName').textContent=d.activeSession||'Semua sesi';document.getElementById('totalStudents').textContent=fmt(d.totalStudents);document.getElementById('blockCount').textContent=fmt(d.blockStats.length);document.getElementById('stateCount').textContent=fmt((d.byState||[]).filter(s=>s.value>0).length);const occ=d.blockStats.filter(x=>x.students>0);document.getElementById('avgBlock').textContent=occ.length?(d.totalStudents/occ.length).toLocaleString('ms-MY',{maximumFractionDigits:1}):'0';document.getElementById('updatedAt').textContent='Dikemas kini: '+new Date(d.generatedAt).toLocaleString('ms-MY');const notes=(d.notes||[]).slice();if(d.unrecognizedStateCount>0)notes.push(d.unrecognizedStateCount+' rekod negeri tidak dapat dipadankan; semak lajur Negeri_Asal.');setStatus(notes.length?notes.join(' '):'Data berjaya dimuatkan.',false);drawBar('blockChart',d.blockStats.map(x=>[x.label,x.students]),'Blok','Bilangan pelajar');drawBar('programChart',d.byProgram.map(x=>[x.label,x.value]),'Program','Bilangan pelajar');drawPie('genderChart',d.byGender.map(x=>[x.label,x.value]));renderBlockTable(d.blockStats);renderStateTable(d.byState||[]);if(geoFeatures)drawMap(d.byState||[]);else loadGeometry()}
+function showEmptyState(id,title,description,iconName='chart'){
+ const el=document.getElementById(id);if(!el)return;
+ el.innerHTML='<div class="empty-state chart-empty"><div class="empty-icon">'+iconSvg(iconName)+'</div><strong>'+esc(title)+'</strong><span>'+esc(description)+'</span></div>';
+}
+function drawBar(id,rows,x,y){
+ const clean=(rows||[]).filter(r=>r&&r[0]!==''&&Number.isFinite(Number(r[1]))&&Number(r[1])>=0);
+ if(!clean.length||clean.every(r=>Number(r[1])===0)){showEmptyState(id,'Belum ada data untuk dipaparkan','Semak rekod sumber atau pilih tempoh yang mempunyai data.');return;}
+ const dt=new google.visualization.DataTable();dt.addColumn('string',x);dt.addColumn('number',y);dt.addRows(clean);
+ new google.visualization.ColumnChart(document.getElementById(id)).draw(dt,{legend:{position:'none'},chartArea:{left:55,top:18,width:'82%',height:'72%'},hAxis:{slantedText:true,slantedTextAngle:30,textStyle:{fontSize:11,color:'#64748b'}},vAxis:{minValue:0,format:'0',textStyle:{fontSize:11,color:'#64748b'}},colors:['#2458d3'],backgroundColor:'transparent',fontName:'Arial'});
+}
+function drawPie(id,rows){
+ const clean=(rows||[]).filter(r=>r&&r[0]!==''&&Number(r[1])>0);
+ if(!clean.length){showEmptyState(id,'Belum ada pecahan data','Carta akan muncul apabila data demografi tersedia.');return;}
+ const dt=new google.visualization.DataTable();dt.addColumn('string','Kategori');dt.addColumn('number','Bilangan');dt.addRows(clean);
+ new google.visualization.PieChart(document.getElementById(id)).draw(dt,{pieHole:.52,chartArea:{left:8,top:12,width:'94%',height:'82%'},legend:{position:'right',textStyle:{fontSize:11,color:'#52627a'}},backgroundColor:'transparent',fontName:'Arial',colors:['#2458d3','#0f766e','#d97706','#8b5cf6','#0ea5e9']});
+}
+function renderBlockTable(bs){const r=document.getElementById('blockTable');if(!bs.length){r.innerHTML='<p>Tiada rekod blok.</p>';return}r.innerHTML='<table><thead><tr><th>Blok</th><th class="num">Penghuni</th><th class="num">Kapasiti</th><th class="num">Kekosongan*</th></tr></thead><tbody>'+bs.map(b=>'<tr><td>'+esc(b.label)+'</td><td class="num">'+fmt(b.students)+'</td><td class="num">'+(b.capacity==null?'—':fmt(b.capacity))+'</td><td class="num">'+(b.vacancies==null?'—':fmt(b.vacancies))+'</td></tr>').join('')+'</tbody></table><p class="map-note">*Berdasarkan kapasiti dalam tab KolejKediaman.</p>'}
+function norm(s){return String(s||'').toLowerCase().replace(/[.,]/g,'').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim()}
+function codeFrom(v){let t=norm(v);if(/^\d{1,2}$/.test(t))return t.padStart(2,'0');const found=ALIASES.find(x=>x[1].some(n=>norm(n)===t));return found?found[0]:null}
+function featureCode(f){const props=f.properties||{};for(const v of Object.values(props)){if(typeof v==='string'){const t=norm(v);const hit=ALIASES.find(x=>x[1].some(n=>norm(n)===t));if(hit)return hit[0]}}for(const [k,v] of Object.entries(props)){if(/state.?code|state.?id|code/i.test(k)){const c=codeFrom(v);if(c)return c}}return null}
+async function loadGeometry(){const root=document.getElementById('stateMap');try{if(!window.d3)throw Error('Pustaka D3 tidak dapat dimuatkan');const resp=await fetch(GEOJSON_URL);if(!resp.ok)throw Error('HTTP '+resp.status);const geo=await resp.json();geoFeatures=(geo.features||[]).map(f=>({...f,__code:featureCode(f)})).filter(f=>f.__code);if(!geoFeatures.length)throw Error('Nama negeri dalam GeoJSON tidak dapat dipadankan');drawMap(lastData.byState||[])}catch(e){root.innerHTML='<div style="padding:18px;color:#991b1b"><strong>Peta tidak dapat dimuatkan.</strong><br>Jadual kedudukan negeri masih tersedia. Semak sambungan internet atau sumber GeoJSON.<br><small>'+esc(e.message||e)+'</small></div>'}}
+function drawMap(states){if(!window.d3||!geoFeatures)return;const counts={};states.forEach(s=>counts[s.code]=+s.value||0);const max=Math.max(1,...Object.values(counts));const color=d3.scaleSequential().domain([0,max]).interpolator(d3.interpolateBlues);const w=760,h=510,p=18,fc={type:'FeatureCollection',features:geoFeatures},proj=d3.geoMercator().fitExtent([[p,p],[w-p,h-p]],fc),path=d3.geoPath(proj);const svg=d3.create('svg').attr('viewBox',`0 0 ${w} ${h}`).attr('role','img').attr('aria-label','Peta taburan pelajar Malaysia');svg.append('title').text('Taburan pelajar mengikut negeri');svg.selectAll('path').data(geoFeatures).join('path').attr('class','state-path').attr('d',path).attr('fill',f=>color(counts[f.__code]||0)).attr('tabindex',0).attr('role','button').attr('aria-label',f=>{const s=states.find(x=>x.code===f.__code);return (s?s.label:'Negeri')+': '+fmt(s?s.value:0)+' pelajar'}).on('click',(e,f)=>selectState(f.__code)).on('keydown',(e,f)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectState(f.__code)}}).on('pointerenter',(e,f)=>selectState(f.__code));document.getElementById('stateMap').replaceChildren(svg.node());if(!selectedCode||!states.some(s=>s.code===selectedCode))selectedCode=(states.find(s=>s.value>0)||states[0]||{}).code;if(selectedCode)selectState(selectedCode)}
+function selectState(code){if(!lastData)return;selectedCode=code;const states=lastData.byState||[],s=states.find(x=>x.code===code);if(!s)return;const total=states.reduce((a,x)=>a+(+x.value||0),0),pct=total?s.value/total*100:0;document.getElementById('stateDetail').innerHTML='<div class="state-name">'+esc(s.label)+' <span style="color:#64748b;font-weight:400">('+esc(s.code)+')</span></div><div class="state-number">'+fmt(s.value)+'</div><div class="state-share">pelajar · '+pct.toLocaleString('ms-MY',{maximumFractionDigits:1})+'% daripada jumlah negeri yang dipadankan</div>'}
+function renderStateTable(states){const sorted=[...states].sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label,'ms'));document.getElementById('stateTable').innerHTML=sorted.length?'<table class="state-table"><thead><tr><th>Negeri</th><th class="num">Pelajar</th><th class="num">%</th></tr></thead><tbody>'+sorted.map(s=>'<tr><td><button type="button" onclick="selectState(\''+s.code+'\')">'+esc(s.label)+'</button></td><td class="num">'+fmt(s.value)+'</td><td class="num">'+(lastData.totalStudents?(s.value/lastData.totalStudents*100).toLocaleString('ms-MY',{maximumFractionDigits:1}):'0')+'%</td></tr>').join('')+'</tbody></table>':'<div class="empty-state"><div class="empty-icon">'+iconSvg('map')+'</div><strong>Belum ada data negeri</strong><span>Semak lajur Negeri_Asal dalam tab Pelajar.</span></div>'}
+function fmt(n){return Number(n||0).toLocaleString('ms-MY')}function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}window.addEventListener('resize',()=>{if(lastData){google.charts.setOnLoadCallback(()=>{drawBar('blockChart',lastData.blockStats.map(x=>[x.label,x.students]),'Blok','Bilangan pelajar');drawBar('programChart',lastData.byProgram.map(x=>[x.label,x.value]),'Program','Bilangan pelajar');drawPie('genderChart',lastData.byGender.map(x=>[x.label,x.value]))});if(geoFeatures)drawMap(lastData.byState||[])}});
+
+window.addEventListener('resize',()=>{if(outingData)renderOuting();if(healthData)renderHealth()});
+let outingData=null;
+const OUTING_TYPES=['Outing Biasa','Outing Khas','Bermalam Khas','Bermalam Biasa'];
+function loadOuting(){
+ const status=document.getElementById('outingStatus');if(!status)return;
+ status.textContent='Sedang memuatkan rekod StatistikKeluar…';
+ callDashboardApi('outing',data=>{
+  outingData=data;
+  const dates=(data.rows||[]).map(r=>r.date).sort();
+  if(dates.length){document.getElementById('outingStart').value=dates[dates.length-1];document.getElementById('outingEnd').value=dates[dates.length-1];}
+  renderOuting();
+ },e=>{status.textContent='Ralat modul pergerakan: '+(e.message||e);});
+}
+function resetOutingDates(){document.getElementById('outingStart').value='';document.getElementById('outingEnd').value='';renderOuting();}
+function outingSums(rows){return rows.reduce((a,r)=>{for(const k of ['maleOut','maleIn','femaleOut','femaleIn'])a[k]+=Number(r[k])||0;return a;},{maleOut:0,maleIn:0,femaleOut:0,femaleIn:0});}
+function outingWeekKey(iso){const d=new Date(iso+'T12:00:00Z');const day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day);return d.toISOString().slice(0,10)+' (minggu)';}
+function outingChart(id,cols,rows,type){const el=document.getElementById(id);if(!rows.length||rows.every(r=>r.slice(1).every(v=>Number(v)===0))){showEmptyState(id,'Tiada pergerakan direkodkan','Pilih julat tarikh lain atau semak rekod dalam tab StatistikKeluar.','outing');return;}const dt=new google.visualization.DataTable();cols.forEach(c=>dt.addColumn(c[0],c[1]));dt.addRows(rows);new google.visualization[type](el).draw(dt,{colors:['#2458d3','#0f766e'],legend:{position:'bottom',textStyle:{fontSize:11,color:'#52627a'}},chartArea:{left:60,top:20,width:'83%',height:'67%'},hAxis:{slantedText:rows.length>8,slantedTextAngle:40,textStyle:{fontSize:11,color:'#64748b'}},vAxis:{minValue:0,format:'0',textStyle:{fontSize:11,color:'#64748b'}},pointSize:type==='LineChart'?4:undefined,backgroundColor:'transparent',fontName:'Arial'});}
+function renderOuting(){
+ if(!outingData)return;
+ const start=document.getElementById('outingStart').value,end=document.getElementById('outingEnd').value,type=document.getElementById('outingType').value,group=document.getElementById('outingGroup').value;
+ const rows=outingData.rows.filter(r=>(!start||r.date>=start)&&(!end||r.date<=end)&&(!type||r.type===type));
+ const sum=outingSums(rows),out=sum.maleOut+sum.femaleOut,ins=sum.maleIn+sum.femaleIn;
+ document.getElementById('outingTotalOut').textContent=fmt(out);document.getElementById('outingTotalIn').textContent=fmt(ins);document.getElementById('outingNet').textContent=(out-ins>0?'+':'')+fmt(out-ins);
+ document.getElementById('outingTotalOutSub').textContent='Lelaki '+fmt(sum.maleOut)+' · Perempuan '+fmt(sum.femaleOut);
+ document.getElementById('outingTotalInSub').textContent='Lelaki '+fmt(sum.maleIn)+' · Perempuan '+fmt(sum.femaleIn);
+ document.getElementById('outingDays').textContent=fmt(new Set(rows.map(r=>r.date)).size);
+ document.getElementById('outingStatus').textContent=rows.length+' rekod dipaparkan'+(start||end?' bagi julat tarikh dipilih':' bagi semua tarikh')+'.';
+ const typeRows=OUTING_TYPES.map(t=>{const s=outingSums(rows.filter(r=>r.type===t));return [t,s.maleOut+s.femaleOut,s.maleIn+s.femaleIn]});
+ outingChart('outingTypeChart',[['string','Jenis'],['number','KELUAR'],['number','MASUK']],typeRows,'ColumnChart');
+ outingChart('outingGenderChart',[['string','Jantina'],['number','KELUAR'],['number','MASUK']],[['Lelaki',sum.maleOut,sum.maleIn],['Perempuan',sum.femaleOut,sum.femaleIn]],'ColumnChart');
+ const buckets={};rows.forEach(r=>{const key=group==='month'?r.date.slice(0,7):group==='week'?outingWeekKey(r.date):r.date;(buckets[key]??=[]).push(r)});
+ const trend=Object.keys(buckets).sort().map(k=>{const s=outingSums(buckets[k]);return [k,s.maleOut+s.femaleOut,s.maleIn+s.femaleIn]});
+ outingChart('outingTrendChart',[['string','Tempoh'],['number','KELUAR'],['number','MASUK']],trend,'LineChart');
+ const body=rows.map(r=>'<tr><td>'+esc(r.date)+'</td><td>'+esc(r.type)+'</td><td class="num">'+fmt(r.maleOut)+'</td><td class="num">'+fmt(r.maleIn)+'</td><td class="num">'+fmt(r.femaleOut)+'</td><td class="num">'+fmt(r.femaleIn)+'</td><td class="num">'+fmt(r.maleOut+r.femaleOut)+'</td><td class="num">'+fmt(r.maleIn+r.femaleIn)+'</td></tr>').join('');
+ document.getElementById('outingTable').innerHTML=rows.length?'<table class="outing-table"><thead><tr><th>Tarikh</th><th>Jenis</th><th class="num">L KELUAR</th><th class="num">L MASUK</th><th class="num">P KELUAR</th><th class="num">P MASUK</th><th class="num">Jumlah KELUAR</th><th class="num">Jumlah MASUK</th></tr></thead><tbody>'+body+'</tbody><tfoot><tr><td colspan="2">JUMLAH</td><td class="num">'+fmt(sum.maleOut)+'</td><td class="num">'+fmt(sum.maleIn)+'</td><td class="num">'+fmt(sum.femaleOut)+'</td><td class="num">'+fmt(sum.femaleIn)+'</td><td class="num">'+fmt(out)+'</td><td class="num">'+fmt(ins)+'</td></tr></tfoot></table>':'<div class="empty-state"><div class="empty-icon">'+iconSvg('calendar')+'</div><strong>Tiada rekod pergerakan</strong><span>Cuba ubah julat tarikh atau jenis outing yang dipilih.</span></div>';
+}
+
+// Modul Kesihatan Pelajar: rekod agregat harian, tiada data individu.
+let healthData=null;
+function loadHealth(){
+ const status=document.getElementById('healthStatus');if(!status)return;status.textContent='Sedang memuatkan rekod StatistikKesihatan…';
+ callDashboardApi('health',data=>{healthData=data;const dates=(data.rows||[]).map(r=>r.date).sort();if(dates.length){document.getElementById('healthStart').value=dates[dates.length-1];document.getElementById('healthEnd').value=dates[dates.length-1];}renderHealth();},e=>{status.textContent='Ralat modul kesihatan: '+(e&&e.message?e.message:e);});
+}
+function resetHealthDates(){document.getElementById('healthStart').value='';document.getElementById('healthEnd').value='';renderHealth();}
+function healthWeekKey(iso){const d=new Date(iso+'T12:00:00Z');const day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day);return d.toISOString().slice(0,10)+' (minggu)';}
+function healthChart(id,cols,rows,type){const el=document.getElementById(id);if(!el)return;if(!rows.length||rows.every(r=>r.slice(1).every(v=>Number(v)===0))){showEmptyState(id,'Tiada aktiviti direkodkan','Pilih tempoh lain atau masukkan rekod agregat kesihatan.','health');return;}const dt=new google.visualization.DataTable();cols.forEach(c=>dt.addColumn(c[0],c[1]));dt.addRows(rows);new google.visualization[type](el).draw(dt,{colors:['#2458d3','#0f766e','#d97706'],legend:{position:'bottom',textStyle:{fontSize:11,color:'#52627a'}},chartArea:{left:60,top:20,width:'83%',height:'67%'},hAxis:{slantedText:rows.length>8,slantedTextAngle:40,textStyle:{fontSize:11,color:'#64748b'}},vAxis:{minValue:0,format:'0',textStyle:{fontSize:11,color:'#64748b'}},pointSize:type==='LineChart'?4:undefined,backgroundColor:'transparent',fontName:'Arial'});}
+function renderHealth(){
+ if(!healthData)return;const start=document.getElementById('healthStart').value,end=document.getElementById('healthEnd').value,group=document.getElementById('healthGroup').value;
+ const rows=(healthData.rows||[]).filter(r=>(!start||r.date>=start)&&(!end||r.date<=end)).sort((a,b)=>a.date.localeCompare(b.date));
+ const sum=rows.reduce((a,r)=>{a.office+=r.office;a.afterHours+=r.afterHours;a.ward+=r.ward;return a;},{office:0,afterHours:0,ward:0});
+ document.getElementById('healthOffice').textContent=fmt(sum.office);document.getElementById('healthAfterHours').textContent=fmt(sum.afterHours);document.getElementById('healthClinicTotal').textContent=fmt(sum.office+sum.afterHours);document.getElementById('healthWard').textContent=fmt(sum.ward);
+ const status=document.getElementById('healthStatus');status.textContent='Memaparkan '+fmt(rows.length)+' tarikh rekod daripada '+fmt((healthData.rows||[]).length)+' tarikh agregat. Semua lawatan berulang termasuk dalam jumlah.';
+ healthChart('healthClinicChart',[['string','Kategori'],['number','Bilangan lawatan']],[['Waktu pejabat',sum.office],['Luar waktu pejabat',sum.afterHours]],'ColumnChart');healthChart('healthWardChart',[['string','Kategori'],['number','Kemasukan']],[['Masuk wad',sum.ward]],'ColumnChart');
+ const buckets={};rows.forEach(r=>{const k=group==='month'?r.date.slice(0,7):group==='week'?healthWeekKey(r.date):r.date;(buckets[k]??=[]).push(r)});const trend=Object.keys(buckets).sort().map(k=>{const s=buckets[k].reduce((a,r)=>{a.office+=r.office;a.afterHours+=r.afterHours;a.ward+=r.ward;return a;},{office:0,afterHours:0,ward:0});return [k,s.office,s.afterHours,s.ward]});healthChart('healthTrendChart',[['string','Tempoh'],['number','Klinik waktu pejabat'],['number','Klinik luar waktu pejabat'],['number','Masuk wad']],trend,'LineChart');
+ const body=rows.map(r=>'<tr><td>'+esc(r.date)+'</td><td class="num">'+fmt(r.office)+'</td><td class="num">'+fmt(r.afterHours)+'</td><td class="num">'+fmt(r.office+r.afterHours)+'</td><td class="num">'+fmt(r.ward)+'</td></tr>').join('');document.getElementById('healthTable').innerHTML=rows.length?'<table class="health-table"><thead><tr><th>Tarikh</th><th class="num">Klinik waktu pejabat</th><th class="num">Klinik luar waktu pejabat</th><th class="num">Jumlah klinik</th><th class="num">Masuk wad</th></tr></thead><tbody>'+body+'</tbody><tfoot><tr><td>JUMLAH</td><td class="num">'+fmt(sum.office)+'</td><td class="num">'+fmt(sum.afterHours)+'</td><td class="num">'+fmt(sum.office+sum.afterHours)+'</td><td class="num">'+fmt(sum.ward)+'</td></tr></tfoot></table>':'<div class="empty-state"><div class="empty-icon">'+iconSvg('health')+'</div><strong>Tiada rekod kesihatan</strong><span>Masukkan rekod agregat dalam tab StatistikKesihatan atau pilih tarikh lain.</span></div>';
+}
+
+// Modul Jadual Felo: paparan kalendar bulanan berdasarkan tab JadualFelo.
+let feloData=null;
+function setFeloCurrentMonth(){const d=new Date();document.getElementById('feloMonth').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');renderFelo();}
+function loadFelo(){const status=document.getElementById('feloStatus');if(!status)return;status.textContent='Sedang memuatkan jadual daripada Google Sheets…';callDashboardApi('felo',data=>{feloData=data;const input=document.getElementById('feloMonth');if(!input.value){const dates=(data.rows||[]).map(r=>r.date).sort();input.value=dates.length?dates[dates.length-1].slice(0,7):(new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0'));}renderFelo();},e=>{status.textContent='Ralat jadual felo: '+(e&&e.message?e.message:e);document.getElementById('feloCalendar').innerHTML='';document.getElementById('feloTable').innerHTML='';});}
+function renderFelo(){if(!feloData)return;const val=document.getElementById('feloMonth').value;if(!/^\d{4}-\d{2}$/.test(val))return;const [yy,mm]=val.split('-').map(Number),monthRows=(feloData.rows||[]).filter(r=>r.date.slice(0,7)===val),byDate={};monthRows.forEach(r=>(byDate[r.date]??=[]).push(r));const first=new Date(Date.UTC(yy,mm-1,1)),days=new Date(Date.UTC(yy,mm,0)).getUTCDate(),offset=(first.getUTCDay()+6)%7;const weekdays=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'];let cal=weekdays.map(x=>'<div class="felo-weekday">'+x+'</div>').join('');for(let i=0;i<offset;i++)cal+='<div class="felo-day empty" aria-hidden="true"></div>';const today=new Date(),todayKey=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');for(let d=1;d<=days;d++){const date=val+'-'+String(d).padStart(2,'0'),assignments=byDate[date]||[];cal+='<div class="felo-day '+(date===todayKey?'today':'')+'"><div class="felo-date">'+d+'</div>'+(assignments.length?assignments.map(r=>'<div class="felo-assignment"><div>'+esc(r.name)+'</div>'+(r.shift?'<div class="felo-shift">'+esc(r.shift)+'</div>':'')+(r.note?'<div class="felo-note">'+esc(r.note)+'</div>':'')+'</div>').join(''):'<div class="felo-note">—</div>')+'</div>';}for(let pad=(offset+days)%7;pad!==0&&pad<7;pad++)cal+='<div class="felo-day empty" aria-hidden="true"></div>';document.getElementById('feloCalendar').innerHTML=cal;const monthLabel=new Date(Date.UTC(yy,mm-1,1)).toLocaleDateString('ms-MY',{month:'long',year:'numeric',timeZone:'UTC'});document.getElementById('feloStatus').textContent='Paparan '+monthLabel+' · '+fmt(monthRows.length)+' penugasan pada '+fmt(Object.keys(byDate).length)+' tarikh.';const body=monthRows.map(r=>'<tr><td>'+esc(r.date)+'</td><td>'+esc(new Date(r.date+'T12:00:00Z').toLocaleDateString('ms-MY',{weekday:'long',timeZone:'UTC'}))+'</td><td>'+esc(r.name)+'</td><td>'+esc(r.shift||'—')+'</td><td>'+esc(r.note||'—')+'</td></tr>').join('');document.getElementById('feloTable').innerHTML=body?'<table class="felo-table"><thead><tr><th>Tarikh</th><th>Hari</th><th>Nama felo</th><th>Giliran</th><th>Catatan</th></tr></thead><tbody>'+body+'</tbody></table>':'<p class="health-note">Tiada jadual felo direkodkan bagi bulan ini.</p>';}
+
+
+const UI_ICON_PATHS={
+ dashboard:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="4" rx="1.5"/><rect x="14" y="10" width="7" height="11" rx="1.5"/><rect x="3" y="13" width="7" height="8" rx="1.5"/>',
+ outing:'<path d="M5 7h14M5 7l4-4M5 7l4 4M19 17H5m14 0-4-4m4 4-4 4"/>',
+ health:'<path d="M12 3v18M3 12h18"/><rect x="4" y="4" width="16" height="16" rx="4"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h3M8 17h6"/>',
+ people:'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+ building:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h2m4 0h2M8 11h2m4 0h2"/>',
+ map:'<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15m6-12v15"/>',
+ chart:'<path d="M4 19V5M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="13" y="7" width="3" height="9" rx="1"/><rect x="19" y="3" width="2" height="13" rx="1"/>',
+ gender:'<circle cx="9" cy="8" r="4"/><path d="M9 12v9m-4-4h8M17 3h4v4m0-4-5 5"/>',
+ program:'<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 4.5v17M8 6h8M8 10h7"/>',
+ clinic:'<path d="M12 4v16M4 12h16"/><circle cx="12" cy="12" r="9"/>',
+ ward:'<path d="M3 20V5m18 15V5M3 15h18M6 15v-4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M6 9V7h4v2"/>',
+ arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
+ refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ shield:'<path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/><path d="m9 12 2 2 4-4"/>',
+ spark:'<path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-2-5.8L4 11l6-2.2zM19 14l1.2 2.8L23 18l-2.8 1.2L19 22l-1.2-2.8L15 18l2.8-1.2z"/>'
+};
+function iconSvg(name){return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">'+(UI_ICON_PATHS[name]||UI_ICON_PATHS.chart)+'</svg>';}
+function addIcon(el,name,cls){if(!el||el.querySelector(':scope > .'+cls))return;const span=document.createElement('span');span.className=cls;span.innerHTML=iconSvg(name);span.setAttribute('aria-hidden','true');el.insertBefore(span,el.firstChild);}
+function decorateDashboardUI(){
+ const tabIcons={tabButtonGeneral:'dashboard',tabButtonOuting:'outing',tabButtonHealth:'health',tabButtonFelo:'calendar'};
+ Object.keys(tabIcons).forEach(id=>addIcon(document.getElementById(id),tabIcons[id],'tab-icon-wrap'));
+ const cards=[...document.querySelectorAll('#tab-general .card')];
+ const generalIcons=['people','building','map','chart'];
+ cards.forEach((card,i)=>{const label=card.querySelector('.card-label');if(label){const name=label.textContent.toLowerCase();addIcon(card, generalIcons[i]||'chart','card-icon');}});
+ const metricIcons={
+  outingTotalOut:'outing',outingTotalIn:'arrow',outingNet:'chart',outingDays:'calendar',
+  healthOffice:'clinic',healthAfterHours:'clock',healthClinicTotal:'health',healthWard:'ward'
+ };
+ Object.keys(metricIcons).forEach(id=>{const metric=document.getElementById(id);if(metric)addIcon(metric.closest('.card'),metricIcons[id],'card-icon');});
+ const titleRules=[
+  ['Taburan pelajar mengikut blok','building'],['Taburan mengikut program','program'],['Taburan mengikut jantina','gender'],
+  ['Taburan pelajar mengikut negeri','map'],['Pemantauan Jerebu','spark'],['Statistik Pergerakan Pelajar','outing'],
+  ['Pergerakan mengikut jenis','chart'],['Pergerakan mengikut jantina','gender'],['Trend pergerakan','chart'],['Jadual statistik pergerakan','calendar'],
+  ['Statistik Kesihatan Pelajar','health'],['Perbandingan lawatan klinik','clinic'],['Jumlah kemasukan wad','ward'],
+  ['Trend kesihatan pelajar','chart'],['Jadual statistik kesihatan','calendar'],['Jadual Bertugas Felo','calendar'],
+  ['Kalendar bulanan','calendar'],['Senarai giliran bulan dipilih','people']
+ ];
+ document.querySelectorAll('.panel h2').forEach(h=>{const text=h.textContent.trim();const rule=titleRules.find(r=>text.startsWith(r[0]));if(rule)addIcon(h,rule[1],'heading-icon');});
+}
+document.addEventListener('DOMContentLoaded',decorateDashboardUI);
+
+</script></body></html>
